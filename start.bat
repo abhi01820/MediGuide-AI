@@ -1,0 +1,13 @@
+@echo off
+echo Starting MediGuide AI Full Stack...
+
+echo Starting AI Service (FastAPI) on Port 8000...
+start cmd /k "cd ai-service && .\venv\Scripts\uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+echo Starting Backend Service (Node.js) on Port 5000...
+start cmd /k "cd backend && npm start"
+
+echo Starting Frontend (React) on Port 5173...
+start cmd /k "cd frontend && npm run dev"
+
+echo All services are starting up!

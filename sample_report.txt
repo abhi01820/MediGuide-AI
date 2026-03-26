@@ -1,0 +1,15 @@
+HEALTH CHECKUP REPORT
+
+Patient Name: John Doe
+Date: October 24, 2026
+
+Vitals:
+Weight: 85 kg
+Height: 175 cm
+Blood Pressure: 135/85 mmHg
+
+Lab Results:
+Fasting Glucose: 110 mg/dL
+Cholesterol: 200 mg/dL
+
+Notes: Patient complains of occasional fatigue. Advised lifestyle modifications.
