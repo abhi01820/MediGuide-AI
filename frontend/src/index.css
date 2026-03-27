@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563EB;
+  --color-secondary: #1E40AF;
+  --color-accent: #38BDF8;
+}
 
 body {
   margin: 0;
