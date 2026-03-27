@@ -40,20 +40,35 @@ async def analyze_report(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+import os
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Try to load from backend/.env if it exists
+load_dotenv(dotenv_path="../backend/.env")
+
 @app.post("/chatbot")
 async def chatbot_response(query: dict):
-    # Basic rule-based chatbot endpoint
-    user_text = query.get("text", "").lower()
+    user_text = query.get("text", "")
     
-    response = "I am the MediGuide AI assistant. How can I help you regarding your health reports?"
-    
-    if "sugar" in user_text or "glucose" in user_text or "diabetes" in user_text:
-        response = "Your fasting glucose levels indicate your diabetes risk. A normal fasting glucose is under 100 mg/dL. If yours is higher, please consult a doctor."
-    elif "blood pressure" in user_text or "bp" in user_text:
-        response = "Normal blood pressure is usually around 120/80. High blood pressure can lead to hypertension. Reducing salt intake and regular exercise can help maintain healthy BP."
-    elif "bmi" in user_text or "weight" in user_text:
-        response = "BMI is calculated using your height and weight. A normal BMI is between 18.5 and 24.9. Maintaining a balanced diet and exercising regularly helps keep a healthy BMI."
-    elif "hello" in user_text or "hi" in user_text:
-        response = "Hello! I am MediGuide AI. You can ask me about your health reports like your BMI, blood pressure, or glucose levels."
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return {"response": "To unlock advanced realistic conversations in any language, please get a free Gemini API Key from Google AI Studio (aistudio.google.com), and add GEMINI_API_KEY=your_key to your backend/.env file!"}
         
-    return {"response": response}
+    try:
+        genai.configure(api_key=api_key)
+        # Use simple model
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        system_prompt = "You are MediGuide AI, a helpful, empathetic, and highly intelligent medical assistant. Keep responses clear, concise, and realistic. Reply in the exact same language the user speaks to you."
+        
+        # We can pass instructions via prompt engineering
+        full_prompt = f"{system_prompt}\n\nUser: {user_text}\nAssistant:"
+        
+        response = model.generate_content(full_prompt)
+        reply = response.text.replace("Assistant:", "").strip()
+        
+        return {"response": reply}
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return {"response": "I'm having a little trouble connecting to my AI brain right now. Please try again later."}
