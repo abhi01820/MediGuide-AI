@@ -1,5 +1,6 @@
 # MediGuide AI - Intelligent Healthcare Web Application
 
+> 🎓 **Presenting this project?** Check out the step-by-step [Presentation Script (PRESENTATION-SCRIPT.md)](./PRESENTATION-SCRIPT.md) for what to say and do during your defense!
 ## Features
 - **Frontend**: React + Vite + TailwindCSS for a beautiful, modern UI.
 - **Backend**: Node.js + Express for Authentication and orchestration.

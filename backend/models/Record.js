@@ -9,8 +9,17 @@ const RecordSchema = new mongoose.Schema({
         bmi_status: String,
         blood_pressure_status: String,
         diabetes_risk: String,
+        cholesterol_status: String,
+        lipid_status: String,
+        cue_status: String,
+        uric_acid_status: String,
+        creatinine_status: String,
+        electrolytes_status: String,
+        predicted_disease: String,
+        recommended_specialist: String,
         summary: String,
-        recommendations: [String]
+        recommendations: [String],
+        metrics: [Object]
     }
 }, { timestamps: true });
 

@@ -12,6 +12,13 @@ def extract_health_data(text: str) -> dict:
         "systolic": None,
         "diastolic": None,
         "fasting_glucose": None,
+        "cholesterol": None,
+        "lipid": None,
+        "cue": None,
+        "uric_acid": None,
+        "creatinine": None,
+        "electrolytes": None,
+        "notes": None,
     }
     
     # Flatten text to space out linebreaks from PDF extraction
@@ -49,6 +56,28 @@ def extract_health_data(text: str) -> dict:
         if val < 30: val = val * 18.0182
         data["fasting_glucose"] = round(val, 2)
         
+    # Additional Specific Vitals
+    chol_match = re.search(r'(?:cholesterol|chol)[\s:=]*([\d\.]+)\s*(?:mg/dl|mmol/l)?', text_clean)
+    if chol_match: data["cholesterol"] = round(float(chol_match.group(1)), 2)
+        
+    lipid_match = re.search(r'(?:lipid|triglycerides)[\s:=]*([\d\.]+)\s*(?:mg/dl|mmol/l)?', text_clean)
+    if lipid_match: data["lipid"] = round(float(lipid_match.group(1)), 2)
+        
+    cue_match = re.search(r'(?:cue|urine examination|urine)[\s:=]*([a-zA-Z]+)', text_clean)
+    if cue_match: data["cue"] = cue_match.group(1).strip().capitalize()
+        
+    uric_match = re.search(r'(?:uric acid|uric)[\s:=]*([\d\.]+)\s*(?:mg/dl|mmol/l)?', text_clean)
+    if uric_match: data["uric_acid"] = round(float(uric_match.group(1)), 2)
+        
+    creat_match = re.search(r'(?:creatinine|creat|creatic)[\s:=]*([\d\.]+)\s*(?:mg/dl|umol/l)?', text_clean)
+    if creat_match: data["creatinine"] = round(float(creat_match.group(1)), 2)
+        
+    elec_match = re.search(r'(?:electrolytes|electrolides|sodium|potassium)[\s:=]*([\d\.]+)\s*(?:meq/l|mmol/l)?', text_clean)
+    if elec_match: data["electrolytes"] = round(float(elec_match.group(1)), 2)
+        
+    notes_match = re.search(r'notes?[\s:=]+(.*)', text.lower())
+    if notes_match: data["notes"] = notes_match.group(1).strip().capitalize()
+
     return data
 
 def analyze_health(data: dict) -> dict:
@@ -58,9 +87,27 @@ def analyze_health(data: dict) -> dict:
         "bmi_status": "Data Missing",
         "blood_pressure_status": "Data Missing",
         "diabetes_risk": "Data Missing",
+        "cholesterol_status": "Data Missing",
+        "lipid_status": "Data Missing",
+        "cue_status": "Data Missing",
+        "uric_acid_status": "Data Missing",
+        "creatinine_status": "Data Missing",
+        "electrolytes_status": "Data Missing",
+        "predicted_disease": None,
+        "recommended_specialist": None,
         "summary": "",
         "recommendations": []
     }
+    
+    if data.get("notes"):
+        notes_text = data["notes"].lower()
+        if "disease" in notes_text or "diabetes" in notes_text or "hypertension" in notes_text or "obese" in notes_text or "anemia" in notes_text or "copd" in notes_text:
+            analysis["predicted_disease"] = data["notes"].title()
+            if "copd" in notes_text: analysis["recommended_specialist"] = "Pulmonologist"
+            elif "cardio" in notes_text: analysis["recommended_specialist"] = "Cardiologist"
+            elif "anemia" in notes_text: analysis["recommended_specialist"] = "Hematologist"
+            elif "diabetes" in notes_text: analysis["recommended_specialist"] = "Endocrinologist"
+            else: analysis["recommended_specialist"] = "General Physician"
     
     # === BMI Analysis ===
     if data["weight_kg"] and data["height_cm"]:
@@ -144,6 +191,59 @@ def analyze_health(data: dict) -> dict:
                 "🩸 Medical (Sugar): Purchase a home glucometer to begin monitoring your morning fasting levels and your post-meal spikes."
             ])
             
+    # === Cholesterol Analysis ===
+    if data.get("cholesterol"):
+        chol = data["cholesterol"]
+        if chol < 200:
+            analysis["cholesterol_status"] = "Desirable"
+        elif 200 <= chol <= 239:
+            analysis["cholesterol_status"] = "Borderline High"
+            analysis["recommendations"].append("🍎 Diet (Heart): Incorporate more foods with healthy fats (like avocados, nuts, salmon) and reduce trans fats to manage cholesterol levels.")
+        else:
+            analysis["cholesterol_status"] = "High Risk"
+            analysis["recommendations"].append("🩺 Medical (Cholesterol): Consult a doctor regarding high cholesterol. Regular cardiovascular workouts can help.")
+
+    # === Lipid Analysis ===
+    if data.get("lipid"):
+        lipid = data["lipid"]
+        if lipid < 150: analysis["lipid_status"] = "Normal"
+        elif 150 <= lipid <= 199: analysis["lipid_status"] = "Borderline High"
+        else:
+            analysis["lipid_status"] = "High Risk"
+            analysis["recommendations"].append("🍎 Diet (Lipids): Restrict alcohol and added sugars, as these strongly raise triglyceride (lipid) levels.")
+
+    # === CUE Analysis ===
+    if data.get("cue"):
+        cue = data["cue"].lower()
+        if "normal" in cue: analysis["cue_status"] = "Normal"
+        else:
+            analysis["cue_status"] = "Abnormal"
+            analysis["recommendations"].append("🩺 Medical (Urine): Abnormal urine test (CUE). Please consult a urologist or general physician to rule out infections or kidney stress.")
+
+    # === Uric Acid Analysis ===
+    if data.get("uric_acid"):
+        uric = data["uric_acid"]
+        if uric < 7.0: analysis["uric_acid_status"] = "Normal"
+        else:
+            analysis["uric_acid_status"] = "Elevated (Hyperuricemia)"
+            analysis["recommendations"].append("🍎 Diet (Uric Acid): Elevated uric acid detected. Avoid purine-rich foods like red meat and alcohol to prevent gout.")
+
+    # === Creatinine Analysis ===
+    if data.get("creatinine"):
+        creat = data["creatinine"]
+        if 0.7 <= creat <= 1.2: analysis["creatinine_status"] = "Normal"
+        else:
+            analysis["creatinine_status"] = "Abnormal"
+            analysis["recommendations"].append("🩺 Medical (Kidneys): Irregular creatinine levels point to kidney strain. Stay heavily hydrated and consult a nephrologist.")
+
+    # === Electrolytes Analysis ===
+    if data.get("electrolytes"):
+        elec = data["electrolytes"]
+        if 135 <= elec <= 145: analysis["electrolytes_status"] = "Balanced"
+        else:
+            analysis["electrolytes_status"] = "Imbalanced"
+            analysis["recommendations"].append("💧 Lifestyle (Electrolytes): Drink balanced electrolyte fluids or evaluate dietary sodium and potassium sources.")
+            
     # === General Summary ===
     status_notes = []
     if analysis["bmi_status"] != "Data Missing":
@@ -170,3 +270,4 @@ def analyze_health(data: dict) -> dict:
     analysis["recommendations"] = unique_recs
         
     return analysis
+

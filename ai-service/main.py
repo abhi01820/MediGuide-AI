@@ -57,12 +57,12 @@ async def chatbot_response(query: dict):
         
     try:
         genai.configure(api_key=api_key)
-        # Use simple model
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Use universally supported model
+        model = genai.GenerativeModel('gemini-pro')
         
         system_prompt = "You are MediGuide AI, a helpful, empathetic, and highly intelligent medical assistant. Keep responses clear, concise, and realistic. Reply in the exact same language the user speaks to you."
         
-        # We can pass instructions via prompt engineering
+        
         full_prompt = f"{system_prompt}\n\nUser: {user_text}\nAssistant:"
         
         response = model.generate_content(full_prompt)
@@ -70,5 +70,5 @@ async def chatbot_response(query: dict):
         
         return {"response": reply}
     except Exception as e:
-        print(f"Gemini API Error: {e}")
+        print(f"Gemini API Error: {str(e)}")
         return {"response": "I'm having a little trouble connecting to my AI brain right now. Please try again later."}
