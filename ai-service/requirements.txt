@@ -7,3 +7,6 @@ spacy
 pymongo
 requests
 pydantic
+google-generativeai
+python-dotenv
+PyMuPDF
