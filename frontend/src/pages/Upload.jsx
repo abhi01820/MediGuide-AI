@@ -55,10 +55,10 @@ export default function Upload() {
     formData.append('file', file);
 
     try {
-      await api.post('/reports/upload', formData, {
+      const response = await api.post('/reports/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      navigate('/dashboard');
+      navigate('/dashboard', { state: { report: response.data } });
     } catch (err) {
       if (!err.response) {
         setError('Cannot connect to backend (http://localhost:5000). Please start backend service and try again.');

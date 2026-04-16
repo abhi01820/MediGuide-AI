@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { Activity, Heart, ShieldAlert, CheckCircle2, AlertTriangle, ArrowRight, UploadCloud, Stethoscope, Volume2, VolumeX, ActivitySquare } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import DoctorRecommendations from '../components/DoctorRecommendations';
 import { motion } from 'framer-motion';
 
@@ -25,8 +25,9 @@ const itemVariants = {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [latestReport, setLatestReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const [latestReport, setLatestReport] = useState(location.state?.report || null);
+  const [loading, setLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const synthRef = useRef(window.speechSynthesis);
 
@@ -72,21 +73,8 @@ export default function Dashboard() {
     setIsSpeaking(true);
   };
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const { data } = await api.get('/reports/history');
-        if (data.length > 0) {
-          setLatestReport(data[0]);
-        }
-      } catch (error) {
-        console.error('Failed to fetch history', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHistory();
-  }, []);
+  // Dashboard only displays a freshly uploaded report via location state.
+  // Historical data is exclusively viewed on the History page.
 
   const getBmiColor = (bmi) => {
     if (!bmi) return "bg-slate-200";
@@ -149,7 +137,7 @@ export default function Dashboard() {
               )}
               
               {/* Dynamic Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {latestReport.analysis.metrics.map((metric, idx) => {
                     const isAbnormal = metric.status?.toLowerCase() === 'abnormal';
                     return (
@@ -181,7 +169,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
               {/* Legacy BMI Card */}
               <motion.div variants={itemVariants} whileHover={{ y: -5 }} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-500 opacity-50"></div>

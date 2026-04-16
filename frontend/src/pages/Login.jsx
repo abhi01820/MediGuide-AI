@@ -33,7 +33,7 @@ export default function Login() {
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
         <div className="absolute top-40 -right-20 w-80 h-80 bg-blue-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-20 left-40 w-96 h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
-        
+
         <div className="relative z-10 flex items-center">
           <div className="p-3 bg-white/10 backdrop-blur-md rounded-2xl mr-4 border border-white/10">
             <Activity className="h-8 w-8 text-white" />
@@ -42,15 +42,15 @@ export default function Login() {
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-5xl font-black text-white leading-tight mb-6"
+            className="text-5xl font-black text-white leading-tight mb-46"
           >
             Your Personal AI Health Architect.
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -60,15 +60,11 @@ export default function Login() {
           </motion.p>
         </div>
 
-        <div className="relative z-10 flex items-center text-slate-400 text-sm font-medium">
-          <ShieldCheck className="w-5 h-5 mr-2 text-green-400" />
-          Hippaa Compliant • Enterprise Grade Encryption
-        </div>
       </div>
 
       {/* Right Pane - Form */}
       <div className="flex-1 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-slate-50/50">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           className="w-full max-w-md"
@@ -91,31 +87,31 @@ export default function Login() {
             <div className="space-y-5">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
-                <input 
-                  type="email" 
-                  required 
-                  className="w-full px-5 py-4 bg-white border border-slate-200 placeholder-slate-400 text-slate-900 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all font-medium" 
-                  placeholder="name@company.com" 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
+                <input
+                  type="email"
+                  required
+                  className="w-full px-5 py-4 bg-white border border-slate-200 placeholder-slate-400 text-slate-900 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                  placeholder="name@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  className="w-full px-5 py-4 bg-white border border-slate-200 placeholder-slate-400 text-slate-900 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all font-medium" 
-                  placeholder="••••••••" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
+                <input
+                  type="password"
+                  required
+                  className="w-full px-5 py-4 bg-white border border-slate-200 placeholder-slate-400 text-slate-900 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={isSubmitting} 
+            <button
+              type="submit"
+              disabled={isSubmitting}
               className="group relative w-full flex justify-center items-center py-4 px-4 border border-transparent text-base font-bold rounded-2xl shadow-xl shadow-primary/30 text-white bg-slate-900 hover:bg-primary focus:outline-none transition-all disabled:opacity-70 mt-8 hover:-translate-y-1"
             >
               {isSubmitting ? 'Authenticating...' : 'Sign in to Dashboard'}
